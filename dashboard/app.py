@@ -309,7 +309,77 @@ st.dataframe(
     selected
 
 )
+# --------------------------------
 
+# Product Recommendation Engine
+
+# --------------------------------
+
+st.header("🛒 Product Recommendation Engine")
+
+recommendations = pd.read_sql(
+
+    "SELECT * FROM product_recommendations",
+
+    engine
+
+)
+
+# Product dropdown
+
+products = sorted(
+
+    recommendations['antecedents']
+
+    .dropna()
+
+    .unique()
+
+)
+
+selected_product = st.selectbox(
+
+    "Select a Product",
+
+    products
+
+)
+
+# Filter recommendations
+
+filtered = recommendations[
+
+    recommendations['antecedents']
+
+    == selected_product
+
+]
+
+if not filtered.empty:
+
+    st.subheader("Recommended Products")
+
+    st.dataframe(
+
+        filtered[[
+
+            'consequents',
+
+            'confidence',
+
+            'lift'
+
+        ]]
+
+    )
+
+else:
+
+    st.info(
+
+        "No recommendations available."
+
+    )
 # --------------------------------
 
 # Next Purchase

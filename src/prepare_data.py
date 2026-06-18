@@ -4,15 +4,29 @@ import pandas as pd
 
 df = pd.read_excel("data/Online Retail.xlsx")
 
-# Data cleaning
+print("Original shape:", df.shape)
+
+# -------------------
+# Data Cleaning
+# -------------------
+
+# Remove rows without CustomerID
 
 df = df.dropna(subset=['CustomerID'])
 
+# Convert CustomerID to integer
+
 df['CustomerID'] = df['CustomerID'].astype(int)
+
+# Remove cancelled invoices
 
 df = df[~df['InvoiceNo'].astype(str).str.startswith('C')]
 
+# Remove invalid quantities
+
 df = df[df['Quantity'] > 0]
+
+# Remove invalid prices
 
 df = df[df['UnitPrice'] > 0]
 
@@ -20,7 +34,11 @@ df = df[df['UnitPrice'] > 0]
 
 df['amount'] = df['Quantity'] * df['UnitPrice']
 
+print("Cleaned shape:", df.shape)
+
+# -------------------
 # Create customers dataframe
+# -------------------
 
 customers = (
     df.groupby('CustomerID')
@@ -38,7 +56,9 @@ customers.rename(
     inplace=True
 )
 
+# -------------------
 # Create transactions dataframe
+# -------------------
 
 transactions = df[[
     'CustomerID',
@@ -58,7 +78,9 @@ transactions.rename(
     inplace=True
 )
 
+# -------------------
 # Save csv files
+# -------------------
 
 customers.to_csv(
     'data/customers.csv',
@@ -70,4 +92,8 @@ transactions.to_csv(
     index=False
 )
 
-print("CSV files created successfully")
+print("Customers shape:", customers.shape)
+
+print("Transactions shape:", transactions.shape)
+
+print("Files created successfully")
